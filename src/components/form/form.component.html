@@ -1,0 +1,127 @@
+<div
+  class="flex items-center justify-center mt-16 flex-col gap-2 h-full w-full"
+>
+  <form
+    id="loanForm"
+    class="w-96 rounded border p-4 bg-neutral-200"
+    (submit)="submitForm($event)"
+    *ngIf="!confirmationPopupVisible"
+  >
+    <div class="space-y-12">
+      <div class="pb-4">
+        <div class="sm:col-span-3">
+          <label
+            for="nome"
+            class="block text-sm font-medium leading-6 text-gray-900"
+            >Nome do solicitante</label
+          >
+          <div class="mt-2">
+            <input
+              type="text"
+              name="nome"
+              id="nome"
+              autocomplete="given-name"
+              [(ngModel)]="formState.nome"
+              class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+
+        <div class="sm:col-span-3">
+          <label
+            for="valor-desejado"
+            class="block text-sm font-medium leading-6 text-gray-900"
+            >Valor desejado</label
+          >
+          <div class="mt-2">
+            <input
+              name="valor-desejado"
+              id="valor-desejado"
+              placeholder="R$"
+              type="number"
+              [(ngModel)]="formState.valorDesejado"
+              class="block w-full pl-2 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            />
+          </div>
+        </div>
+        <div class="sm:col-span-3">
+          <label
+            for="numero-parcelas"
+            class="block text-sm font-medium leading-6 text-gray-900"
+            >Número de parcelas</label
+          >
+          <div class="mt-2">
+            <select
+              name="numero-parcelas"
+              id="numero-parcelas"
+              [(ngModel)]="formState.numeroParcelas"
+              class="block w-full pl-2 rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            >
+              <option *ngFor="let option of parcelOptions" [value]="option">
+                {{ option }} vezes
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-x-6">
+      <button
+        type="submit"
+        class="rounded-md w-full bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        [disabled]="
+          !formState.nome ||
+          !formState.valorDesejado ||
+          !formState.numeroParcelas ||
+          loading
+        "
+        *ngIf="!confirmationPopupVisible"
+      >
+        <span *ngIf="!loading">Simular empréstimo</span>
+        <span *ngIf="loading">Carregando...</span>
+      </button>
+    </div>
+  </form>
+
+  <div
+    class="w-96 rounded border p-4 bg-neutral-200 mt-3"
+    *ngIf="loanSimulationResult && !confirmationPopupVisible"
+  >
+    <p>Valor das parcelas: {{ loanSimulationResult.valorParcelas }}</p>
+    <p>Número de parcelas: {{ loanSimulationResult.numeroParcelas }}</p>
+    <p>Total do valor com juros: {{ loanSimulationResult.totalComJuros }}</p>
+    <button
+      (click)="openConfirmationPopup()"
+      [disabled]="loading"
+      class="rounded-md w-full mt-2 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+    >
+      Continuar
+    </button>
+  </div>
+  <div class="modal">
+    <div
+      class="modal-content"
+      *ngIf="confirmationPopupVisible"
+      class="w-96 rounded border p-4 bg-neutral-200 mt-3"
+    >
+      <p>Valor das parcelas: {{ loanSimulationResult.valorParcelas }}</p>
+      <p>Número de parcelas: {{ loanSimulationResult.numeroParcelas }}</p>
+      <p>Total do valor com juros: {{ loanSimulationResult.totalComJuros }}</p>
+      <div class="flex items-center gap-2 mt-2">
+        <button
+          (click)="closeConfirmationPopup()"
+          class="rounded-md w-full bg-transparent border border-neutral-500 px-3 py-2 text-sm text-neutral-500"
+        >
+          Cancelar
+        </button>
+        <button
+          (click)="confirmLoan()"
+          class="rounded-md w-full bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Confirmar Empréstimo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
